@@ -3,6 +3,8 @@ import datetime
 import os
 import csv
 import typing
+import matplotlib.pyplot as plt
+
 
 try:
     with open("fichier1000.txt", encoding="utf8") as fh:
@@ -10,7 +12,7 @@ try:
 except:
         print("Le fichier n'existe pas %s", os.path.abspath('fichieratraiter.txt'))
 ress=res.split('\n')
-
+tab_dest=np.array([])
 tableau_evenements=np.array([])
 fic=open("test.csv", "w")#test est le fichier d'arrivée des extractions
 evenement = "DATE ; SOURCE ; PORT ; DESTINATION ; FLAG ; SEQ ; ACK ; WIN ; OPTIONS ; LENGTH" #intitulé de mes colonnes
@@ -34,6 +36,7 @@ for event in ress:
             #Pour la source (2ème colonne) 
             texte=event.split(" ")
             nomip1=texte[2].split(".")
+            print(nomip1)
             if len(nomip1) == 2:
                 nomip=nomip1[0]
             if len(nomip1) == 3:
@@ -44,6 +47,15 @@ for event in ress:
                 nomip=nomip1[0]+ "." +nomip1[1]+ "." +nomip1[2]+ "." +nomip1[3]
             if len(nomip1) == 6:
                 nomip=nomip1[0]+ "." +nomip1[1]+ "." +nomip1[2]+ "."+nomip1[3]+"."+ nomip1[4]
+            print("nomip :",nomip)
+            flag2=0
+            for item in tab_dest:
+                if item == nomip:
+                    flag2=1
+            
+            if flag2==0:
+                tab_dest = np.append(tab_dest,nomip)
+            print("tableau", tab_dest)
             #port
             if len(texte) > 1: 
                 port1=texte[2].split(".")
@@ -103,4 +115,8 @@ for event in ress:
                 prog=0 #il ne fait plus de tour, il s'arrete
             evenement=heure1+";"+nomip+ ";" +port+ ";" + nomip2+ ";"+flag+ ";" +seq+ ";" +ack+ ";" +win+ ";" +options+ ";" +length
             fic.write(evenement + "\n") #on écrire "evenement" dans le csv et \n pour revenir à la ligne (pour ne pas écrire sur la même ligne)
+print("tableau final", tab_dest)
+plt.plot(tab_dest, [1, 7, 2, 11])
+#plt.ylabel('some numbers')
+plt.show()
 fic.close()
